@@ -14,11 +14,11 @@ class QuestionManager(models.Manager):
 
     def new(self):
         """New method."""
-        return self.none()
+        return self.all().order_by('-pk')
 
     def popular(self):
         """Popular method."""
-        return self.none()
+        return self.all().order_by('-rating')
 
 
 class Question(models.Model):
@@ -55,6 +55,10 @@ class Question(models.Model):
 
         verbose_name = "Question"
         verbose_name_plural = "Questions"
+
+    def get_absolute_url(self):
+        """Return absolute url."""
+        return "/question/%i/" % self.id
 
 
 class Answer(models.Model):

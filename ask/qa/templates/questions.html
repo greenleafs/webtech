@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Questions</title>
+    </head>
+    <body>
+        {% for question in questions %}
+            <p><a href="{{ question.get_absolute_url }}">{{ question.title }}</a></p>
+        {% endfor %}
+    </body>
+</html>
