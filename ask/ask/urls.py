@@ -8,7 +8,8 @@ from qa.views import (
     home,
     popular,
     question,
-    ask
+    ask,
+    answer
 )
 
 from django.contrib import admin
@@ -25,6 +26,7 @@ urlpatterns = patterns(
     url(r'^login/$', test, name='login'),
     url(r'^signup/$', test, name='signup'),
     url(r'^ask/$', ask, name='ask'),
+    url(r'^answer/$', answer, name='answer'),
     url(r'^popular/$', popular, name='popular'),
     url(r'^new/', test, name='new'),
     url(r'^question/(?P<id>.*)/$', question, name='question'),

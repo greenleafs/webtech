@@ -6,7 +6,14 @@
     <body>
         <p>{{ question.title }}</p>
         <p>{{ question.text }}</p>
-        <p>ANSWERS:</p>
+        <p>NEW ANSWER</p>
+        <form action="{% url 'answer' %}" method="post">{% csrf_token %}
+            {% for f in form %}
+            <p>{{ f }}</p>
+            {% endfor %}
+            <input type="submit" value="Отправить">
+        </form>
+        <p>ANOTHER ANSWERS:</p>
         {% for answer in answers %}
             <p>{{ answer.text }}</p>
         {% endfor %}

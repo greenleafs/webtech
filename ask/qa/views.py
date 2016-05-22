@@ -9,7 +9,7 @@ from django.http import Http404
 from django.shortcuts import render
 
 from qa.models import Question, Answer
-from qa.forms import AskForm
+from qa.forms import AskForm, AnswerForm
 
 
 def home(request):
@@ -51,7 +51,8 @@ def question(request, id):
         answers = Answer.objects.filter(question=question)
         context = {
             'question': question,
-            'answers': answers
+            'answers': answers,
+            'form': AnswerForm()
         }
 
         return render(request, 'question.html', context)
@@ -77,6 +78,23 @@ def ask(request):
 
     context = {'form': form}
     return render(request, 'ask.html', context)
+
+
+def answer(request):
+    """Answer post form."""
+    if request.method == 'POST':
+        form = AnswerForm(request.POST)
+        if form.is_valid():
+            question = form.question
+            answer = Answer(text=form.cleaned_data['text'],
+                            question=question)
+            answer.save()
+
+            return HttpResponseRedirect(
+                reverse('question', kwargs={'id': question.id})
+            )
+
+    return HttpResponseRedirect(reverse('root', kwargs={}))
 
 
 def test(request, *args, **kwargs):
