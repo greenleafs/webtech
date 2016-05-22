@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Signup</title>
+    </head>
+    <body>
+        <form action="." method="post">{% csrf_token %}
+            {% for f in form %}
+            <p>{{ f.label }} {{ f }}</p>
+            {% if f.errors %}
+              {% for e in f.errors %}<p>{{ e }}</p>{%endfor %}
+            {% endif %}
+            {% endfor %}
+            <input type="submit" value="Login">
+        </form>
+        {% if error %}
+        <p>{{ error }}</p>
+        {% endif %}
+    </body>
+</html>

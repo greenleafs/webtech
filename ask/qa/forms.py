@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
-
+from django.contrib.auth.models import User
 
 from qa.models import Question
 
@@ -59,3 +59,69 @@ class AnswerForm(forms.Form):
                 )
 
         return self.cleaned_data
+
+
+class SignupForm(forms.Form):
+
+    """Signup form."""
+
+    username = forms.CharField(
+        label=_(u'Логин'),
+        max_length=30,
+        required=True
+    )
+
+    email = forms.EmailField(
+        label=(u'Email'),
+        max_length=30,
+        required=True
+    )
+
+    password = forms.CharField(
+        label=_(u'Пароль'),
+        required=True,
+        widget=forms.PasswordInput()
+    )
+
+    def clean(self):
+        """Clean form."""
+        super(SignupForm, self).clean()
+        if not self.errors:
+            username = self.cleaned_data['username']
+            try:
+                User.objects.get(username=username)
+                raise ValidationError(
+                    _('User with username "%s" already registered') % username
+                )
+            except User.DoesNotExist:
+                pass
+
+        return self.cleaned_data
+
+    def save(self):
+        """Create user."""
+        params = {
+            'username': self.cleaned_data['username'],
+            'email': self.cleaned_data['email'],
+            'password': self.cleaned_data['password']
+        }
+        user = User.objects.create_user(**params)
+        user.save()
+        return user
+
+
+class LoginForm(forms.Form):
+
+    """Login form."""
+
+    username = forms.CharField(
+        label=_(u'Логин'),
+        max_length=30,
+        required=True
+    )
+
+    password = forms.CharField(
+        label=_(u'Пароль'),
+        required=True,
+        widget=forms.PasswordInput()
+    )

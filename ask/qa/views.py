@@ -7,9 +7,11 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
 from django.shortcuts import render
+from django.contrib.auth import authenticate, login, logout
+
 
 from qa.models import Question, Answer
-from qa.forms import AskForm, AnswerForm
+from qa.forms import AskForm, AnswerForm, SignupForm, LoginForm
 
 
 def home(request):
@@ -66,8 +68,15 @@ def ask(request):
         form = AskForm(request.POST)
         if form.is_valid():
 
-            question = Question(title=form.cleaned_data['title'],
-                                text=form.cleaned_data['text'])
+            params = {
+                'title': form.cleaned_data['title'],
+                'text': form.cleaned_data['text']
+            }
+
+            if request.user.is_authenticated():
+                params.update({'author': request.user})
+
+            question = Question(**params)
             question.save()
 
             return HttpResponseRedirect(
@@ -86,14 +95,72 @@ def answer(request):
         form = AnswerForm(request.POST)
         if form.is_valid():
             question = form.question
-            answer = Answer(text=form.cleaned_data['text'],
-                            question=question)
+
+            params = {
+                'text': form.cleaned_data['text'],
+                'question': question
+            }
+
+            if request.user.is_authenticated():
+                params.update({'author': request.user})
+
+            answer = Answer(**params)
             answer.save()
 
             return HttpResponseRedirect(
                 reverse('question', kwargs={'id': question.id})
             )
 
+    return HttpResponseRedirect(reverse('root', kwargs={}))
+
+
+def signup(request):
+    """Signup view."""
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            auth_user = authenticate(username=user.username,
+                                     password=form.cleaned_data['password'])
+            login(request, auth_user)
+            return HttpResponseRedirect(reverse('root', kwargs={}))
+    else:
+        form = SignupForm()
+
+    context = {'form': form}
+    return render(request, 'signup.html', context)
+
+
+def login_user(request):
+    """Login view."""
+    if request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('root', kwargs={}))
+
+    login_error_msg = None
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            auth_user = authenticate(username=form.cleaned_data['username'],
+                                     password=form.cleaned_data['password'])
+            if auth_user:
+                login(request, auth_user)
+                return HttpResponseRedirect(reverse('root', kwargs={}))
+            else:
+                login_error_msg = 'Login error'
+    else:
+        form = LoginForm()
+
+    context = {
+        'form': form,
+        'error': login_error_msg
+    }
+
+    return render(request, 'login.html', context)
+
+
+def logout_user(request):
+    """Logout."""
+    logout(request)
     return HttpResponseRedirect(reverse('root', kwargs={}))
 
 

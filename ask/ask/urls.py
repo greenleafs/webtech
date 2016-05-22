@@ -9,7 +9,10 @@ from qa.views import (
     popular,
     question,
     ask,
-    answer
+    answer,
+    signup,
+    login_user,
+    logout_user
 )
 
 from django.contrib import admin
@@ -23,8 +26,9 @@ urlpatterns = patterns(
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^$', home, name='root'),
-    url(r'^login/$', test, name='login'),
-    url(r'^signup/$', test, name='signup'),
+    url(r'^login/$', login_user, name='login'),
+    url(r'^logout/$', logout_user, name='logout'),
+    url(r'^signup/$', signup, name='signup'),
     url(r'^ask/$', ask, name='ask'),
     url(r'^answer/$', answer, name='answer'),
     url(r'^popular/$', popular, name='popular'),
