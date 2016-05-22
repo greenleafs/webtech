@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Ask</title>
+    </head>
+    <body>
+        <form action="." method="post">{% csrf_token %}
+            {% for f in form %}
+            <p>{{ f }}</p>
+            {% if f.errors %}
+              {% for e in f.errors %}<p>{{ e }}</p>{%endfor %}
+            {% endif %}
+            {% endfor %}
+            <input type="submit" value="Отправить">
+        </form>
+    </body>
+</html>

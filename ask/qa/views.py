@@ -2,12 +2,14 @@
 """QA application."""
 from __future__ import unicode_literals
 
-from django.shortcuts import render
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import HttpResponse
+from django.core.urlresolvers import reverse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
+from django.shortcuts import render
 
 from qa.models import Question, Answer
+from qa.forms import AskForm
 
 
 def home(request):
@@ -55,6 +57,26 @@ def question(request, id):
         return render(request, 'question.html', context)
     except Question.DoesNotExist:
         raise Http404()
+
+
+def ask(request):
+    """Ask form."""
+    if request.method == 'POST':
+        form = AskForm(request.POST)
+        if form.is_valid():
+
+            question = Question(title=form.cleaned_data['title'],
+                                text=form.cleaned_data['text'])
+            question.save()
+
+            return HttpResponseRedirect(
+                reverse('question', kwargs={'id': question.id})
+            )
+    else:
+        form = AskForm()
+
+    context = {'form': form}
+    return render(request, 'ask.html', context)
 
 
 def test(request, *args, **kwargs):
