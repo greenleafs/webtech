@@ -1,6 +1,6 @@
 #!/bin/bash
-git clone https://github.com/greenleafs/webtech.git web
-cd web
+# git clone https://github.com/greenleafs/webtech.git web
+# cd web
 cp ask/ask/default_settings.py ask/ask/settings.py
 sudo rm /etc/nginx/sites-enabled/default
 sudo ln -s /home/box/web/etc/test-nginx.conf /etc/nginx/sites-enabled/test.conf
